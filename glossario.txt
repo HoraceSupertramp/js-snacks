@@ -1,0 +1,4 @@
+Implementare = Scrivere il codice di
+Callback     = Una funzione passata come parametro ad un'altra
+Predicato    = Una funzione che, a prescindere dai suoi argomenti, restituisce un valore booleano (true/false)
+Efficiente   = Un algoritmo è più efficiente di un altro se risolve lo stesso problema eseguendo meno istruzioni (si considerano le righe di codice effettivamente eseguite quando l'algoritmo va in azione, non le righe di codice scritte).

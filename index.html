@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <title>Document</title>
+    <style>
+        #grid-result {
+            background-color: #e9ecef;
+            overflow: scroll;
+        }
+        #carousel {
+            position: relative;
+            aspect-ratio: 1;
+            width: 200px;
+        }
+        #carousel .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #carousel .slide:nth-child(1) {
+            background-image: url(https://picsum.photos/seed/1/200/300);
+        }
+        #carousel .slide:nth-child(2) {
+            background-image: url(https://picsum.photos/seed/2/200/300);
+        }
+        #carousel .slide:nth-child(3) {
+            background-image: url(https://picsum.photos/seed/3/200/300);
+        }
+        #carousel .slide:nth-child(4) {
+            background-image: url(https://picsum.photos/seed/4/200/300);
+        }
+        #carousel .slide:not(.active) {
+            visibility: hidden;
+        }
+        #carousel:hover::after {
+            display: block;
+            content: 'Paused';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: .6em 1.2em;
+            color: #fff;
+            background: rgba(0, 0, 0, .2);
+        }
+        #modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .2);
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #modal:not(.open) {
+            display: none;
+        }
+        #modal .content {
+            padding: 1em 1.4em;
+            background: #fff;
+        }
+        #accordion {
+            display: flex;
+        }
+        .drawer {
+            appearance: none;
+            flex: 1 1 auto;
+            border: 0;
+            padding: 1em;
+        }
+        .drawer:not(.active) {
+            background: gray !important;
+            color: #fff;
+        }
+        div.form-control[contenteditable="true"] {
+            flex: 0 1 auto;
+            width: auto;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="display-3 my-3">Esercizi JS</h1>
+        <section class="mb-5">
+            <h3>Una semplice Griglia</h3>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">grid(</span>
+                    <div contenteditable="true" class="form-control" id="grid-input">2</div>
+                    <span class="input-group-text">) = </span>
+                </div>
+                <pre class="form-control" id="grid-result">##<br>##</pre>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Media Aritmetica</h3>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">average(</span>
+                    <div contenteditable="true" class="form-control" id="average-input">[4, 3, 2]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="average-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Giusto quel poco di matematica</h3>
+            <p>Il fattoriale si calcola come moltiplicazione dei predecessori</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">factorial(</span>
+                    <div contenteditable="true" class="form-control" id="factorial-input">4</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="factorial-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Push ma non su Github</h3>
+            <p>Aggiunge un elemento in fondo ad un array</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">push(</span>
+                    <div contenteditable="true" class="form-control push-input" id="push-input-1">[0, "Hello World", 2]</div>
+                    <span class="input-group-text">,</span>
+                    <div contenteditable="true" class="form-control push-input" id="push-input-2">2</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="push-result-1" readonly disabled>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Contenuto dell'array dopo l'esecuzione: </span>
+                    <input type="text" class="form-control" id="push-result-2" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Pop quando non è Push</h3>
+            <p>Rimuove un elemento dal fondo di un array</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">pop(</span>
+                    <div contenteditable="true" class="form-control" id="pop-input">[0, "Hello World", 2]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="pop-result-1" readonly disabled>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Contenuto dell'array dopo l'esecuzione: </span>
+                    <input type="text" class="form-control" id="pop-result-2" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Unshi(f)t </h3>
+            <p>Aggiunge un elemento in cima ad un array</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">unshift(</span>
+                    <div contenteditable="true" class="form-control unshift-input" id="unshift-input-1">[0, "Hello World", 2]</div>
+                    <span class="input-group-text">,</span>
+                    <div contenteditable="true" class="form-control unshift-input" id="unshift-input-2">true</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="unshift-result-1" readonly disabled>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Contenuto dell'array dopo l'esecuzione: </span>
+                    <input type="text" class="form-control" id="unshift-result-2" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Ma era Shift o era Pop?</h3>
+            <p>Rimuove un elemento dalla cima di un array</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">shift(</span>
+                    <div contenteditable="true" class="form-control" id="shift-input">[0, "Hello World", 2]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="shift-result-1" readonly disabled>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Contenuto dell'array dopo l'esecuzione: </span>
+                    <input type="text" class="form-control" id="shift-result-2" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Join the Party</h3>
+            <p>Genera un array concatenando gli elementi di un array</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">join(</span>
+                    <div contenteditable="true" class="form-control" id="join-input">["Hello ", "World"]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="join-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Banane? Split</h3>
+            <p>Genera un array contenente i caratteri di una stringa, uno dopo l'altro</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">split(</span>
+                    <div contenteditable="true" class="form-control" id="split-input">"Hello World"</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="split-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Con Cat o Con Dog?</h3>
+            <p>Genera un array contenente gli elementi di altri due array.</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">concat(</span>
+                    <div contenteditable="true" class="form-control concat-input" id="concat-input-1">[1, 2]</div>
+                    <span class="input-group-text">, </span>
+                    <div contenteditable="true" class="form-control concat-input" id="concat-input-2">[3, 4]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="concat-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Finders Keepers</h3>
+            <p>Trova in un array il primo elemento che verifichi certe condizioni.</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">find(</span>
+                    <div contenteditable="true" class="form-control find-input" id="find-input-1">[1, 2, 3]</div>
+                    <span class="input-group-text">, </span>
+                    <div contenteditable="true" class="form-control find-input" id="find-input-2">(element) => element > 2</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="find-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Esrever</h3>
+            <p>Capovolge un array.</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">reverse(</span>
+                    <div contenteditable="true" class="form-control" id="reverse-input">[1, 2, 3]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="reverse-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Con Ripetizioni o Senza?</h3>
+            <p>Verifica se un array <b>non</b> contiene doppioni.</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">unique(</span>
+                    <div contenteditable="true" class="form-control" id="unique-input">[1, 2, 2, 4]</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="unique-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Forìc</h3>
+            <p>Esegue del codice su ciascun elemento dell'array (ovvero il ciclo for scritto con le funzioni).</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">forEach(</span>
+                    <div contenteditable="true" class="form-control forEach-input" id="forEach-input-1">[{ a: 3 }, { a: 4 }]</div>
+                    <span class="input-group-text">, </span>
+                    <div contenteditable="true" class="form-control forEach-input" id="forEach-input-2">(element) => element.a = null</div>
+                    <span class="input-group-text">);</span>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Contenuto dell'array dopo l'esecuzione: </span>
+                    <input type="text" class="form-control" id="forEach-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>La Map del Tesoro</h3>
+            <p>Converte un array in un altro, elemento per elemento, secondo una funzione di conversione.</p>
+            <p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">map(</span>
+                    <div contenteditable="true" class="form-control map-input" id="map-input-1">[4, 5, 9]</div>
+                    <span class="input-group-text">, </span>
+                    <div contenteditable="true" class="form-control map-input" id="map-input-2">(element) => element * element</div>
+                    <span class="input-group-text">) = </span>
+                    <input type="text" class="form-control" id="map-result" readonly disabled>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Modal da Sfilata</h3>
+            <p>
+                <button id="modal-open" class="btn btn-primary" >Apri il Modale</button>
+                <div id="modal">
+                    <div class="content">
+                        <p>Questo è un modale brutto ma efficace.</p>
+                        <button id="modal-close" class="btn btn-primary">Chiudi</button>
+                    </div>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Che poi alla fine il Carosello lo puoi scrive' in Tre Righe</h3>
+            <p>
+                <div id="carousel">
+                    <div class="slide"></div>
+                    <div class="slide"></div>
+                    <div class="slide"></div>
+                    <div class="slide"></div>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Accordion in Sol Maggiore</h3>
+            <p>E' brutto ma la meccanica è quella.</p>
+            <p>
+                <div id="accordion">
+                    <button class="drawer" data-note="G4" style="background-color: green;">Sol</button>
+                    <button class="drawer" data-note="B4" style="background-color: red;">Si</button>
+                    <button class="drawer" data-note="D5" style="background-color: orange;">Re</button>
+                    <button class="drawer" data-note="F#5" style="background-color: yellow;">Fa</button>
+                    <button class="drawer" data-note="A5" style="background-color: pink;">La</button>
+                    <button class="drawer" data-note="C6" style="background-color: purple;">Do</button>
+                    <button class="drawer" data-note="E6" style="background-color: blue;">Mi</button>
+                </div>
+            </p>
+        </section>
+        <section class="mb-5">
+            <h3>Timer proprio quello da Cucina</h3>
+            <p>
+                <div id="timer">
+                    <div class="time">
+                        <span id="hour"></span>:<span id="minute"></span>:<span id="second"></span>
+                    </div>
+                    <div class="date">
+                        <span id="day"></span>/<span id="month"></span>/<span id="year"></span>
+                    </div>
+                </div>
+            </p>
+        </section>
+    </div>
+    <script src="esercizi.js"></script>
+    <script src="soluzioni.js"></script>
+    <script>
+        function evaluateExpression(code) {
+            if (code === '') {
+                return null;
+            }
+            try {
+                return eval(`(${code})`);
+            } catch (error) {
+                return null;
+            }
+        }
+        function evaluateArray(code) {
+            const value = evaluateExpression(code);
+            if (Array.isArray(value)) {
+                return value;
+            }
+            return null;
+        }
+        function evaluateString(code) {
+            const value = evaluateExpression(code);
+            if (typeof value === 'string') {
+                return value;
+            }
+            return null;
+        }
+        function evaluateNumber(code) {
+            const value = evaluateExpression(code);
+            if (typeof value === 'number') {
+                return value;
+            }
+            return null;
+        }
+        function evaluateFunction(code) {
+            const value = evaluateExpression(code);
+            if (typeof value === 'function') {
+                return value;
+            }
+            return null;
+        }
+        function print(value) {
+            if (Array.isArray(value)) {
+                return '[ ' + value.map(print).join(', ') + ' ]';
+            }
+            return typeof value === 'function'
+                ? value.toString()
+                : value !== undefined
+                    ? JSON.stringify(value)
+                    : 'undefined';
+        }
+        function updateGrid() {
+            const value = evaluateNumber(document.querySelector('#grid-input').innerText);
+            document.querySelector('#grid-result').innerText =
+                value != null
+                    ? grid(value)
+                    : '';
+        }
+        function updateFactorial() {
+            const value = evaluateNumber(document.querySelector('#factorial-input').innerText);
+            document.querySelector('#factorial-result').value =
+                value != null
+                    ? String(factorial(value))
+                    : '';
+        }
+        function updateAverage() {
+            const value = evaluateArray(document.querySelector('#average-input').innerText);
+            document.querySelector('#average-result').value =
+                value != null
+                    ? String(average(value))
+                    : '';
+        }
+        function updateRemoval(type) {
+            const array = evaluateArray(document.querySelector(`#${type}-input`).innerText);
+            if (array !== null) {
+                const result = type === 'pop' ? pop(array) : shift(array);
+                document.querySelector(`#${type}-result-1`).value = print(result);
+                document.querySelector(`#${type}-result-2`).value = print(array);
+            } else {
+                document.querySelector(`#${type}-result-1`).value = '';
+                document.querySelector(`#${type}-result-2`).value = '';
+            }
+        }
+        function updateInsertion(type) {
+            const array = evaluateArray(document.querySelector(`#${type}-input-1`).innerText);
+            if (array != null && document.querySelector(`#${type}-input-2`).innerText != '') {
+                const value = evaluateExpression(document.querySelector(`#${type}-input-2`).innerText);
+                const result = type === 'unshift' ? unshift(array, value) : push(array, value);
+                document.querySelector(`#${type}-result-1`).value = print(result);
+                document.querySelector(`#${type}-result-2`).value = print(array);
+            } else {
+                document.querySelector(`#${type}-result-1`).value = '';
+                document.querySelector(`#${type}-result-2`).value = '';
+            }
+        }
+        function updatePush() {
+            updateInsertion('push');
+        }
+        function updateUnshift() {
+            updateInsertion('unshift');
+        }
+        function updatePop() {
+            updateRemoval('pop');
+        }
+        function updateShift() {
+            updateRemoval('shift');
+        }
+        function updateJoin() {
+            const array = evaluateArray(document.querySelector('#join-input').innerText);
+            document.querySelector('#join-result').value =
+                array != null
+                    ? print(join(array))
+                    : '';
+        }
+        function updateSplit() {
+            const value = evaluateString(document.querySelector('#split-input').innerText);
+            document.querySelector('#split-result').value =
+                value
+                    ? print(split(value))
+                    : '';
+        }
+        function updateConcat() {
+            const array1 = evaluateArray(document.querySelector('#concat-input-1').innerText);
+            const array2 = evaluateArray(document.querySelector('#concat-input-2').innerText);
+            document.querySelector('#concat-result').value =
+                array1 != null && array2 != null
+                    ? print(concat(array1, array2))
+                    : '';
+        }
+        function updateFind() {
+            const array = evaluateArray(document.querySelector('#find-input-1').innerText);
+            const predicate = evaluateFunction(document.querySelector('#find-input-2').innerText);
+            document.querySelector('#find-result').value =
+                array != null && predicate != null
+                    ? print(find(array, predicate))
+                    : '';
+        }
+        function updateReverse() {
+            const array = evaluateArray(document.querySelector('#reverse-input').innerText);
+            document.querySelector('#reverse-result').value =
+                array != null
+                    ? print(reverse(array))
+                    : '';
+        }
+        function updateUnique() {
+            const array = evaluateArray(document.querySelector('#unique-input').innerText);
+            document.querySelector('#unique-result').value =
+                array != null
+                    ? print(unique(array))
+                    : '';
+        }
+        function updateForEach() {
+            const array = evaluateArray(document.querySelector('#forEach-input-1').innerText);
+            const procedure = evaluateFunction(document.querySelector('#forEach-input-2').innerText);
+            if (array != null) {
+                try {
+                    forEach(array, procedure);
+                    document.querySelector('#forEach-result').value = print(array);
+                } catch (error) {
+                    document.querySelector('#forEach-result').value = '';
+                }
+            } else {
+                document.querySelector('#forEach-result').value = '';
+            }
+        }
+        function updateMap() {
+            const array = evaluateArray(document.querySelector('#map-input-1').innerText);
+            const mapper = evaluateFunction(document.querySelector('#map-input-2').innerText);
+            try {
+                document.querySelector('#map-result').value =
+                    array != null && mapper != null
+                        ? print(map(array, mapper))
+                        : '';
+            } catch (error) {
+                document.querySelector('#map-result').value = '';
+            }
+
+        }
+        document.querySelector('#grid-input').addEventListener('input', updateGrid);
+        document.querySelector('#factorial-input').addEventListener('input', updateFactorial);
+        document.querySelector('#average-input').addEventListener('input', updateAverage);
+        document.querySelectorAll('.push-input').forEach((element) => {
+            element.addEventListener('input', updatePush);
+        });
+        document.querySelectorAll('.unshift-input').forEach((element) => {
+            element.addEventListener('input', updateUnshift);
+        });
+        document.querySelector('#pop-input').addEventListener('input', updatePop);
+        document.querySelector('#shift-input').addEventListener('input', updateShift);
+        document.querySelector('#join-input').addEventListener('input', updateJoin);
+        document.querySelector('#split-input').addEventListener('input', updateSplit);
+        document.querySelectorAll('.concat-input').forEach((element) => {
+            element.addEventListener('input', updateConcat);
+        });
+        document.querySelectorAll('.find-input').forEach((element) => {
+            element.addEventListener('input', updateFind);
+        });
+        document.querySelector('#reverse-input').addEventListener('input', updateReverse);
+        document.querySelector('#unique-input').addEventListener('input', updateUnique);
+        document.querySelectorAll('.forEach-input').forEach((element) => {
+            element.addEventListener('input', updateForEach);
+        });
+        document.querySelectorAll('.map-input').forEach((element) => {
+            element.addEventListener('input', updateMap);
+        });
+        updateGrid();
+        updateFactorial();
+        updateAverage();
+        updatePush();
+        updateUnshift();
+        updatePop();
+        updateShift();
+        updateJoin();
+        updateSplit();
+        updateConcat();
+        updateFind();
+        updateReverse();
+        updateUnique();
+        updateForEach();
+        updateMap();
+        carousellify(
+            document.querySelector('#carousel'),
+            document.querySelectorAll('#carousel .slide'),
+        );
+        modalify(
+            document.querySelector('#modal'),
+            document.querySelector('#modal-open'),
+            document.querySelector('#modal-close'),
+        );
+        accordionify(
+            document.querySelectorAll('.drawer')
+        );
+        timerify(
+            document.querySelector('#second'),
+            document.querySelector('#minute'),
+            document.querySelector('#hour'),
+            document.querySelector('#day'),
+            document.querySelector('#month'),
+            document.querySelector('#year'),
+        );
+        let synth = null;;
+        const notes = [];
+        new MutationObserver(async (mutations) => {
+            for (let i = 0; i < mutations.length; i++) {
+                if (mutations[i].type === 'attributes' && mutations[i].attributeName === 'class') {
+                    const note = mutations[i].target.getAttribute('data-note');
+                    if (mutations[i].target.classList.contains('active')) {
+                        if (!notes.includes(note)) {
+                            if (synth == null) {
+                                await Tone.start();
+                                synth = new Tone.PolySynth().toDestination();
+                            }
+                            synth.triggerAttack([note]);
+                            notes.push(note);
+                        }
+                    } else {
+                        const index = notes.findIndex((playingNote) => playingNote === note)
+                        if (index !== -1) {
+                            synth.triggerRelease([note]);
+                            notes.splice(index, 1);
+                        }
+                    }
+                }
+            }
+        }).observe(document.querySelector('#accordion'), {
+            subtree: true,
+            attributes: true,
+        });
+    </script>
+</body>
+</html>
